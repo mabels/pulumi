@@ -19,6 +19,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/pkg/errors"
 
@@ -291,6 +292,7 @@ func LoadProject(path string) (*Project, error) {
 	}
 
 	var proj Project
+	//time.Sleep(5 * time.Second)
 	err = m.Unmarshal(b, &proj)
 	if err != nil {
 		return nil, err
@@ -410,6 +412,7 @@ func save(path string, value interface{}, mkDirAll bool) error {
 		return err
 	}
 
+	time.Sleep(5 * time.Second)
 	b, err := m.Marshal(value)
 	if err != nil {
 		return err

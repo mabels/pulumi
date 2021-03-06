@@ -16,9 +16,13 @@ package encoding
 
 import (
 	"encoding/json"
+	"fmt"
+	"os"
 	"path/filepath"
 
-	yaml "gopkg.in/yaml.v2"
+	"github.com/pulumi/go-yaml"
+	"github.com/pulumi/go-yaml/ast"
+	"github.com/pulumi/go-yaml/parser"
 )
 
 var JSONExt = ".json"
@@ -99,12 +103,27 @@ func (m *yamlMarshaler) IsYAMLLike() bool {
 }
 
 func (m *yamlMarshaler) Marshal(v interface{}) ([]byte, error) {
+	//time.Sleep(5 * time.Second)
 	return yaml.Marshal(v)
 }
+
+var printed = false
 
 func (m *yamlMarshaler) Unmarshal(data []byte, v interface{}) error {
 	// IDEA: use a "strict" marshaler, so that we can warn on unrecognized keys (avoiding silly mistakes).  We should
 	//     set aside an officially sanctioned area in the metadata for extensibility by 3rd parties.
 
+	if !printed {
+		parsed, err := parser.ParseBytes(data, parser.ParseComments)
+		if err != nil {
+			panic(err)
+		}
+		for _, doc := range parsed.Docs {
+			ast.Dump(os.Stdout, doc)
+		}
+
+		printed = true
+	}
+	fmt.Println("Unmarshalling YAML")
 	return yaml.Unmarshal(data, v)
 }
